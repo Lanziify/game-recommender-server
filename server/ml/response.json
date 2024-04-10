@@ -1,0 +1,14 @@
+[
+    {
+        "gamer": "Versatile Mobile Gamer",
+        "description": "Demonstrates versatility by engaging with mobile games across multiple genres, showcasing their adaptability and broad gaming interests. You are not confined to one specific type of game but instead enjoy the variety and exploration that comes with trying out different genres on your mobile device."
+    },
+    {
+        "gamer": "Mid-Core Mobile Gamer",
+        "description": "Favoring games that combine accessibility, strategy, and depth. You like games with a moderate level of commitment and ability; they usually have more intricate gameplay mechanics than casual games, but they don't demand as much effort or talent as hardcore games do. You treasure the mobility and ease of use of mobile gaming platforms, but you also recognize the challenge and complexity offered by games in genres like strategy, role-playing, simulation, and action. You probably put a lot of time and effort into learning these games, engaging with communities, and keeping up with the latest releases in the mid-core gaming genre."
+    },
+    {
+        "gamer": "Casual Mobile Gamer",
+        "description": "Prefers to play mobile games for leisure and amusement over competitive or deep engagement. You're drawn to games with straightforward gameplay, short play sessions that you can fit into your little downtime. Puzzle, match-three, endless runners, simulation, and other types of games that don't need a lot of skill or time are what you usually wind up playing. Throughout the day, you occasionally play games on your mobile device as a simple way to pass the time."
+    }
+]

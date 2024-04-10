@@ -3,6 +3,8 @@ from ..ml.model import model
 import pandas as pd
 import numpy as np
 from g4f.client import Client
+import os
+import json
 
 index_blueprint = Blueprint("index", __name__)
 
@@ -70,21 +72,6 @@ def get_input_shape(request_data):
     return df.values
 
 
-def get_course(request_data):
-    courses = [
-        "Agriculture",
-        "Computer Science",
-        "Elementary Education",
-        "Finance Management",
-        "Human Resource Management",
-        "Hotel Restaurant Management",
-        "Secondary Education - Science",
-    ]
-    course_index = request_data["course"]
-    course = courses[course_index]
-    return course
-
-
 @index_blueprint.route("/", methods=["GET"])
 def index():
     try:
@@ -100,14 +87,14 @@ def get_recommendations():
     try:
         request_data = request.get_json()
 
-        course = get_course(request_data)
 
-        print(course)
-
+        course = request_data['course']
+        
         if "course" in request_data:
             request_data.pop("course")
 
         inputs = get_input_shape(request_data)
+
 
         prediction = model.predict(inputs)
 
@@ -122,7 +109,20 @@ def get_recommendations():
         else:
             device = "Android/IOS"
 
-        prompt = f"Act as an assistant that only speaks JSON. Format the json with games as key for array containing objects keys: name, description, downloads. Apply the similar formatting with tools. Do not write normal text. Give me an arrau of objects of 10 {gamer_prediction} games for {device} and 10 educational tools for {course} that can be found in appstore or playstore. Consider these genres {request_data['genre']}."
+
+        current_dir = os.path.dirname(__file__)
+
+        gamer_response_file = os.path.join(current_dir, "..", "ml", "response.json")
+
+        with open(gamer_response_file, "r") as f:
+            gamer_response = json.load(f)
+
+        for gamer_type in gamer_response:
+            if gamer_prediction.lower() in gamer_type['gamer'].lower():
+                gamer_prediction_type = gamer_type['gamer']
+                gamer_description = gamer_type['description']
+
+        prompt = f"Act as an assistant that only speaks JSON. Format the json with games as key for array containing objects keys: name, description, downloads(shorthand). Apply the similar formatting with tools. Do not write normal text. Give me an arrau of objects of 5 {gamer_prediction} games for {device} and 5 educational tools for {course} that can be found in appstore or playstore. Consider these genres {request_data['genre']}."
 
         response = client.chat.completions.create(
             messages=[
@@ -134,11 +134,17 @@ def get_recommendations():
             model="gpt-3.5-turbo",
         )
 
+        g4f_response = str(response.choices[0].message.content)
+
+        extracted_response = g4f_response[7:-3] if '```json' in g4f_response else g4f_response
+
+        print(response.choices[0].message.content)
+
         return jsonify(
-            title=gamer_prediction,
-            body=str(response.choices[0].message.content)[7:-3],
+            title=f'You are a {gamer_prediction_type}',
+            description=gamer_description,
+            body=extracted_response,
         )
-        # return ''
     except Exception as e:
         print(e)
         return jsonify(msg="Error"), 500
